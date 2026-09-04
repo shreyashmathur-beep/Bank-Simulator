@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shreyash Bank</title>
+<style>
+  :root{
+    --ledger: #F4EFE1;
+    --ledger-line: #D8CFB4;
+    --ink: #1F2A22;
+    --forest: #17261E;
+    --forest-2: #223629;
+    --gold: #B08A3E;
+    --gold-dim: #8C6F35;
+    --red: #8C4A3A;
+    --green-pos: #3D6B4F;
+    --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+    --serif: 'Source Serif Pro', Georgia, 'Times New Roman', serif;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    min-height:100vh;
+    background: var(--forest);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(176,138,62,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(176,138,62,0.07), transparent 45%);
+    font-family: var(--serif);
+    color: var(--ink);
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding: 40px 16px 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .paper{
+    width:100%;
+    max-width: 480px;
+    background: var(--ledger);
+    border: 1px solid var(--ledger-line);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    position:relative;
+  }
+  .paper::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0; height:6px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-dim));
+  }
+  header.brand{
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid var(--ledger-line);
+    text-align:left;
+  }
+  header.brand .mark{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+  }
+  header.brand h1{
+    margin:0;
+    font-size: 28px;
+    font-weight: 600;
+    line-height:1.15;
+    color: var(--forest);
+  }
+  header.brand p{
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: #5b5342;
+  }
+  .body-area{ padding: 24px 28px 32px; }
+  .field{ margin-bottom: 16px; }
+  .field label{
+    display:block;
+    font-size: 12px;
+    font-family: var(--mono);
+    text-transform: none;
+    color: #5b5342;
+    margin-bottom: 6px;
+  }
+  .field input, .field select{
+    width:100%;
+    padding: 11px 12px;
+    font-size: 16px;
+    font-family: var(--serif);
+    border: 1px solid var(--ledger-line);
+    background: #FBF8EF;
+    color: var(--ink);
+    border-radius: 2px;
+  }
+  .field input:focus, .field select:focus{
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+  }
+  .hint{ font-size: 12.5px; color: #7a7360; margin-top: 6px; }
+  button{
+    font-family: var(--serif);
+    cursor: pointer;
+    border: none;
+    border-radius: 2px;
+  }
+  .btn-primary{
+    width:100%;
+    padding: 13px 16px;
+    background: var(--forest);
+    color: #F4EFE1;
+    font-size: 15.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:hover{ background: var(--forest-2); }
+  .btn-primary:disabled{ opacity: 0.5; cursor: default; }
+  .btn-ghost{
+    width:100%;
+    padding: 12px 16px;
+    background: transparent;
+    color: var(--forest);
+    border: 1px solid var(--ledger-line);
+    font-size: 14.5px;
+  }
+  .btn-ghost:hover{ background: rgba(0,0,0,0.03); }
+  .btn-link{
+    background:none; border:none; padding:0;
+    color: var(--gold-dim);
+    text-decoration: underline;
+    font-size: 13.5px;
+    font-family: var(--serif);
+  }
+  .stack > * + *{ margin-top: 10px; }
+  .row{ display:flex; gap:10px; }
+  .row > *{ flex:1; }
+  .error-msg{
+    background: rgba(140,74,58,0.10);
+    border: 1px solid rgba(140,74,58,0.35);
+    color: var(--red);
+    font-size: 13.5px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    border-radius: 2px;
+  }
+  .success-msg{
+    background: rgba(61,107,79,0.10);
+    border: 1px solid rgba(61,107,79,0.35);
+    color: var(--green-pos);
+    font-size: 13.5px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    border-radius: 2px;
+  }
+  /* Dashboard */
+  .acct-strip{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--ledger-line);
+    background: #EDE6D2;
+  }
+  .acct-strip .who{ font-size:14px; }
+  .acct-strip .who b{ color: var(--forest); }
+  .acct-strip .num{ font-family: var(--mono); font-size: 12.5px; color:#7a7360; }
+  .balance-block{
+    padding: 26px 28px 10px;
+    text-align:left;
+  }
+  .balance-block .label{
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: #8a8267;
+    margin-bottom: 4px;
+  }
+  .balance-block .amount{
+    font-family: var(--mono);
+    font-size: 40px;
+    font-weight: 600;
+    color: var(--forest);
+    line-height:1;
+  }
+  .sub-balances{
+    display:flex;
+    gap: 18px;
+    padding: 16px 28px 6px;
+    border-bottom: 1px solid var(--ledger-line);
+  }
+  .sub-balances .item{ flex:1; }
+  .sub-balances .item .l{ font-family: var(--mono); font-size:10.5px; color:#8a8267; }
+  .sub-balances .item .v{ font-family: var(--mono); font-size:17px; color: var(--ink); margin-top:2px; }
+  .grid-actions{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--ledger-line);
+    border-top: 1px solid var(--ledger-line);
+    border-bottom: 1px solid var(--ledger-line);
+  }
+  .grid-actions button{
+    background: var(--ledger);
+    padding: 16px 6px;
+    font-size: 12.5px;
+    color: var(--forest);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+  }
+  .grid-actions button:hover{ background: #EDE6D2; }
+  .grid-actions .ic{ font-size: 18px; }
+  .panel{
+    padding: 22px 28px 26px;
+  }
+  .panel h2{
+    font-size: 17px;
+    margin: 0 0 14px;
+    color: var(--forest);
+  }
+  .tx-list{
+    font-family: var(--mono);
+    font-size: 12.8px;
+    max-height: 320px;
+    overflow-y:auto;
+  }
+  .tx-row{
+    display:flex;
+    justify-content:space-between;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--ledger-line);
+    gap: 10px;
+  }
+  .tx-row .desc{ color:#4a4636; flex:1; }
+  .tx-row .amt.pos{ color: var(--green-pos); }
+  .tx-row .amt.neg{ color: var(--red); }
+  .tx-id{ color:#a49a7d; margin-right:8px; }
+  .footer-nav{
+    padding: 14px 28px 26px;
+  }
+  .badge{
+    display:inline-block;
+    font-family: var(--mono);
+    font-size:11px;
+    letter-spacing:0.04em;
+    padding: 4px 9px;
+    border-radius: 100px;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold-dim);
+  }
+  .divider{ height:1px; background:var(--ledger-line); margin: 18px 0; }
+  .welcome-hero{
+    padding: 46px 28px 30px;
+    text-align:left;
+  }
+  .welcome-hero .mark{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--gold-dim);
+    letter-spacing: 0.08em;
+  }
+  .welcome-hero h1{
+    font-size: 34px;
+    margin: 10px 0 8px;
+    color: var(--forest);
+    line-height: 1.1;
+  }
+  .welcome-hero p{
+    font-size: 15px;
+    color: #5b5342;
+    max-width: 34ch;
+    margin: 0;
+  }
+  .stat-line{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #8a8267;
+    padding: 0 28px 22px;
+  }
+  a.silent{ color:inherit; }
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-thumb{ background: var(--ledger-line); border-radius:4px; }
+  @media (max-width: 420px){
+    .balance-block .amount{ font-size: 32px; }
+    .grid-actions{ grid-template-columns: repeat(3,1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="paper" id="app"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Firebase ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyAeLyV-jrgpqkgaR06y8NEGeGJvY8eA0jY",
+    authDomain: "bank-system-6952d.firebaseapp.com",
+    projectId: "bank-system-6952d",
+    storageBucket: "bank-system-6952d.firebasestorage.app",
+    messagingSenderId: "707679493353",
+    appId: "1:707679493353:web:74eb92e4ad36cd7d526478",
+    measurementId: "G-Y76J1WP6MX"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const ACCOUNTS_COL = db.collection("bank_accounts");
+  const MARKET_DOC = db.collection("bank_meta").doc("market");
+
+  // ---------- Stock Market ----------
+  const STOCKS = [
+    { symbol: "GLDX", name: "Goldwell Exports" },
+    { symbol: "TCHN", name: "Techna Systems" },
+    { symbol: "OILR", name: "Oilridge Co" },
+    { symbol: "FARM", name: "Farmstead Group" },
+    { symbol: "CRYP", name: "CryptoNova" }
+  ];
+  let market = { prices: {}, rigged: {} };
+  let marketTimer = null;
+
+  function defaultMarket(){
+    const prices = {}, rigged = {};
+    STOCKS.forEach(s => { prices[s.symbol] = Math.round((20 + Math.random()*180) * 100) / 100; rigged[s.symbol] = null; });
+    return { prices, rigged };
+  }
+
+  async function loadMarket(){
+    try{
+      const snap = await MARKET_DOC.get();
+      if (snap.exists && snap.data().prices){
+        const d = snap.data();
+        market = { prices: d.prices || {}, rigged: d.rigged || {} };
+      }else{
+        market = defaultMarket();
+        await MARKET_DOC.set(market);
+      }
+    }catch(e){
+      market = defaultMarket();
+    }
+  }
+
+  async function saveMarket(){
+    try{
+      await MARKET_DOC.set(market);
+    }catch(e){
+      // best-effort
+    }
+  }
+
+  function watchMarket(){
+    MARKET_DOC.onSnapshot((snap) => {
+      if (!snap.exists) return;
+      const d = snap.data();
+      market = { prices: d.prices || {}, rigged: d.rigged || {} };
+      if (screen === "dashboard" && dashPanel === "market") render();
+      if (screen === "admin" && adminView === "market") render();
+    });
+  }
+
+  function tickMarket(){
+    STOCKS.forEach(s => {
+      const rig = market.rigged[s.symbol];
+      if (rig !== null && rig !== undefined && rig !== ""){
+        market.prices[s.symbol] = Number(rig);
+      }else{
+        const cur = market.prices[s.symbol] || 50;
+        const pct = (Math.random() - 0.5) * 0.12; // up to ±6% per tick
+        let next = cur * (1 + pct);
+        if (next < 1) next = 1;
+        market.prices[s.symbol] = Math.round(next * 100) / 100;
+      }
+    });
+    saveMarket();
+  }
+
+  function startMarketTimer(){
+    if (marketTimer) return;
+    marketTimer = setInterval(tickMarket, 10000);
+  }
+
+  // ---------- Auctions ----------
+  const AUCTIONS_DOC = db.collection("bank_meta").doc("auctions");
+  let auctions = [];
+  let lastAutoPostAt = 0;
+  let auctionTimer = null;
+
+  // Pool the system posts from automatically, so the marketplace never sits empty.
+  const AUTO_ITEM_POOL = [
+    { name: "Vintage Watch", min: 50, max: 300 },
+    { name: "Rare Comic Book", min: 20, max: 150 },
+    { name: "Antique Vase", min: 80, max: 400 },
+    { name: "Signed Guitar", min: 200, max: 800 },
+    { name: "Gold Coin", min: 100, max: 500 },
+    { name: "Diamond Ring", min: 500, max: 2000 },
+    { name: "Classic Painting", min: 300, max: 1500 },
+    { name: "Limited Sneakers", min: 60, max: 250 },
+    { name: "Mystery Crate", min: 30, max: 200 },
+    { name: "Vintage Motorcycle", min: 1000, max: 4000 }
+  ];
+  const AUTO_TARGET_ACTIVE = 3;   // system tries to keep this many auctions live
+  const AUTO_COOLDOWN_MS = 20000; // don't post more than once every 20s
+
+  async function loadAuctions(){
+    try{
+      const snap = await AUCTIONS_DOC.get();
+      const d = snap.exists ? snap.data() : null;
+      auctions = (d && Array.isArray(d.items)) ? d.items : [];
+      lastAutoPostAt = (d && d.lastAutoPostAt) ? d.lastAutoPostAt : 0;
+    }catch(e){
+      auctions = [];
+    }
+  }
+
+  async function saveAuctions(){
+    try{
+      await AUCTIONS_DOC.set({ items: auctions, lastAutoPostAt });
+    }catch(e){
+      // best-effort
+    }
+  }
+
+  function watchAuctions(){
+    AUCTIONS_DOC.onSnapshot((snap) => {
+      if (!snap.exists) return;
+      const d = snap.data();
+      auctions = Array.isArray(d.items) ? d.items : [];
+      lastAutoPostAt = d.lastAutoPostAt || 0;
+      if (screen === "dashboard" && dashPanel === "auctions") render();
+      if (screen === "admin" && adminView === "auctions") render();
+    });
+  }
+
+  function newAuctionId(){
+    return "a" + Date.now() + Math.floor(Math.random()*1000);
+  }
+
+  async function settleAuctionsIfDue(){
+    let changed = false;
+    for (const auc of auctions){
+      if (!auc.settled && Date.now() >= auc.endTime){
+        auc.settled = true;
+        changed = true;
+        if (auc.bidderNum && accounts[auc.bidderNum]){
+          const winner = accounts[auc.bidderNum];
+          winner.balance -= auc.currentBid;
+          if (!winner.collectibles) winner.collectibles = [];
+          winner.collectibles.push({ name: auc.item, price: auc.currentBid });
+          pushTx(winner, "Won auction: " + auc.item, -auc.currentBid);
+          await persistAccount(auc.bidderNum);
+        }
+      }
+    }
+    if (changed) await saveAuctions();
+  }
+
+  async function autoPostIfNeeded(){
+    const now = Date.now();
+    const activeCount = auctions.filter(a => !a.settled && a.endTime > now).length;
+    if (activeCount >= AUTO_TARGET_ACTIVE) return;
+    if (now - lastAutoPostAt < AUTO_COOLDOWN_MS) return;
+    const pick = AUTO_ITEM_POOL[Math.floor(Math.random() * AUTO_ITEM_POOL.length)];
+    const startPrice = Math.round((pick.min + Math.random() * (pick.max - pick.min)) * 100) / 100;
+    const minutes = 2 + Math.random() * 3; // 2–5 minutes
+    auctions.push({
+      id: newAuctionId(), item: pick.name, startPrice,
+      currentBid: null, bidderNum: null, bidderName: null, autoBids: {},
+      endTime: now + minutes * 60000, settled: false, auto: true
+    });
+    lastAutoPostAt = now;
+    await saveAuctions();
+  }
+
+  async function auctionTick(){
+    await settleAuctionsIfDue();
+    await autoPostIfNeeded();
+    if (screen === "dashboard" && dashPanel === "auctions") render();
+    if (screen === "admin" && adminView === "auctions") render();
+  }
+
+  function startAuctionTimer(){
+    if (auctionTimer) return;
+    auctionTimer = setInterval(auctionTick, 5000);
+  }
+
+  // ---------- Storage ----------
+  // Each account is its own document, so one write can never wipe out
+  // another account that was created or changed around the same time.
+  let accounts = {};
+
+  async function loadAccounts(){
+    try{
+      const snap = await ACCOUNTS_COL.get();
+      accounts = {};
+      snap.forEach(doc => { accounts[doc.id] = doc.data(); });
+    }catch(e){
+      accounts = {};
+    }
+  }
+
+  async function persistAccount(accNum){
+    try{
+      await ACCOUNTS_COL.doc(accNum).set(accounts[accNum]);
+    }catch(e){
+      // best-effort; keep working in memory
+    }
+  }
+
+  async function deleteAccountDoc(accNum){
+    try{
+      await ACCOUNTS_COL.doc(accNum).delete();
+    }catch(e){
+      // best-effort
+    }
+  }
+
+  function watchAccounts(){
+    ACCOUNTS_COL.onSnapshot((snap) => {
+      snap.docChanges().forEach(change => {
+        if (change.type === "removed"){
+          delete accounts[change.doc.id];
+          if (currentAccountNumber === change.doc.id) logout();
+        }else{
+          accounts[change.doc.id] = change.doc.data();
+        }
+      });
+      render();
+    });
+  }
+
+  // Account 59 is permanently an admin account, no matter what. Beyond that,
+  // any account can be granted or revoked admin access from inside the panel.
+  const PERMANENT_ADMIN = "59";
+  function isAccountAdmin(accNum){
+    return accNum === PERMANENT_ADMIN || !!(accounts[accNum] && accounts[accNum].isAdmin);
+  }
+
+  // ---------- App State ----------
+  let screen = "welcome"; // welcome | create | login | dashboard | admin
+  let currentAccountNumber = null;
+  let dashPanel = null; // which action panel is open
+  let message = null; // {type:'error'|'success', text}
+  let loginAttempts = 0;
+  let adminView = null; // null (list) | 'edit' | 'create' | 'pin' | 'market' | 'auctions' | 'access'
+  let adminSelected = null;
+
+  function setMessage(type, text){ message = { type, text }; }
+  function clearMessage(){ message = null; }
+
+  function fmt(n){
+    const num = Math.round(n * 100) / 100;
+    return (num < 0 ? "-" : "") + Math.abs(num).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2});
+  }
+
+  function newAccountNumber(){
+    let n;
+    do{
+      n = String(Math.floor(Math.random()*90)+10);
+    }while(accounts[n]);
+    return n;
+  }
+
+  function nextTx(acct){
+    acct.transaction_number += 1;
+    return "TX" + acct.transaction_number;
+  }
+
+  function pushTx(acct, desc, amount){
+    const sign = amount >= 0 ? "+" : "-";
+    acct.transactions.unshift(nextTx(acct) + " | " + desc + " | " + sign + fmt(Math.abs(amount)));
+  }
+
+  function todayStr(){
+    return new Date().toISOString().slice(0,10); // YYYY-MM-DD
+  }
+
+  // Salary now pays out once per login (not on a timer), and savings earn
+  // a flat 1% once per calendar day, also checked at login time.
+  function applyLoginBonuses(acct){
+    const notes = [];
+    if (acct.income > 0){
+      acct.balance += acct.income;
+      acct.rewards += 1;
+      pushTx(acct, "Salary (" + acct.profession + ")", acct.income);
+      notes.push("Salary of " + fmt(acct.income) + " paid.");
+    }
+    const today = todayStr();
+    if (acct.savings > 0 && acct.lastSavingsDate !== today){
+      const interest = Math.round(acct.savings * 0.01 * 100) / 100;
+      acct.savings += interest;
+      pushTx(acct, "Daily savings interest (1%)", interest);
+      notes.push("Savings earned " + fmt(interest) + " interest.");
+    }
+    acct.lastSavingsDate = today;
+    return notes;
+  }
+
+  // ---------- Actions ----------
+  function goWelcome(){ screen = "welcome"; dashPanel=null; clearMessage(); render(); }
+  function goCreate(){ screen = "create"; clearMessage(); render(); }
+  function goLogin(){ screen = "login"; loginAttempts = 0; clearMessage(); render(); }
+
+  async function doCreate(name, pin){
+    clearMessage();
+    if (!name.trim()){ setMessage("error","Enter your name."); render(); return; }
+    if (!/^\d{4}$/.test(pin)){ setMessage("error","PIN must be exactly 4 digits."); render(); return; }
+    if (Object.keys(accounts).length >= 90){ setMessage("error","No more account numbers are available."); render(); return; }
+    const accNum = newAccountNumber();
+    accounts[accNum] = {
+      name: name.trim(), balance: 0, savings: 0, loan: 0, pin,
+      rewards: 0, transactions: [], transaction_number: 1000,
+      income: 0, profession: "", portfolio: {}, houses: [], collectibles: [],
+      fixedDeposit: null, lastSavingsDate: todayStr(), isAdmin: false
+    };
+    const acct = accounts[accNum];
+    acct.balance -= 200;
+    pushTx(acct, "Account creation fee", -200);
+    await persistAccount(accNum);
+    currentAccountNumber = accNum;
+    screen = "dashboard"; dashPanel = null;
+    setMessage("success", "Account created. Your account number is " + accNum + " — keep it safe.");
+    render();
+  }
+
+  async function doLogin(accNum, pin){
+    clearMessage();
+    if (!accounts[accNum]){ setMessage("error","Account not found."); render(); return; }
+    if (accounts[accNum].pin === pin){
+      currentAccountNumber = accNum;
+      screen = "dashboard"; dashPanel = null;
+      loginAttempts = 0;
+      const notes = applyLoginBonuses(accounts[accNum]);
+      await persistAccount(accNum);
+      if (notes.length) setMessage("success", notes.join(" "));
+      render();
+    }else{
+      loginAttempts += 1;
+      if (loginAttempts >= 3){
+        setMessage("error","Too many incorrect PIN attempts. Account locked for this session.");
+        screen = "welcome";
+      }else{
+        setMessage("error","Incorrect PIN. " + (3-loginAttempts) + " attempt(s) left.");
+      }
+      render();
+    }
+  }
+
+  function logout(){
+    currentAccountNumber = null;
+    screen = "welcome"; dashPanel = null;
+    clearMessage();
+    render();
+  }
+
+  function openPanel(p){ dashPanel = p; clearMessage(); render(); }
+  function closePanel(){ dashPanel = null; clearMessage(); render(); }
+
+  async function doWithdraw(amountStr){
+    const acct = accounts[currentAccountNumber];
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0){ setMessage("error","Enter a valid amount."); render(); return; }
+    if (amount > 500){ setMessage("error","Maximum withdrawal is 500."); render(); return; }
+    if (amount > acct.balance){ setMessage("error","Insufficient funds."); render(); return; }
+    acct.balance -= amount;
+    acct.rewards += 1;
+    pushTx(acct, "Withdrawal", -amount);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Withdrew " + fmt(amount) + ". New balance: " + fmt(acct.balance));
+    dashPanel = null; render();
+  }
+
+  async function doDeposit(amountStr){
+    const acct = accounts[currentAccountNumber];
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0){ setMessage("error","Enter a valid amount."); render(); return; }
+    if (amount > 500){ setMessage("error","Maximum deposit is 500."); render(); return; }
+    acct.balance += amount;
+    acct.rewards += 1;
+    pushTx(acct, "Deposit", amount);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Deposited " + fmt(amount) + ". New balance: " + fmt(acct.balance));
+    dashPanel = null; render();
+  }
+
+  async function doTransfer(receiver, amountStr){
+    const acct = accounts[currentAccountNumber];
+    const amount = parseFloat(amountStr);
+    if (!accounts[receiver]){ setMessage("error","Receiver account does not exist."); render(); return; }
+    if (receiver === currentAccountNumber){ setMessage("error","You cannot transfer money to yourself."); render(); return; }
+    if (isNaN(amount) || amount <= 0){ setMessage("error","Enter a valid amount."); render(); return; }
+    if (amount > acct.balance){ setMessage("error","Insufficient funds."); render(); return; }
+    acct.balance -= amount;
+    acct.rewards += 2;
+    pushTx(acct, "Transfer to " + receiver, -amount);
+    const recv = accounts[receiver];
+    recv.balance += amount;
+    pushTx(recv, "Transfer from " + currentAccountNumber, amount);
+    await persistAccount(currentAccountNumber);
+    await persistAccount(receiver);
+    setMessage("success", "Sent " + fmt(amount) + " to account " + receiver + ".");
+    dashPanel = null; render();
+  }
+
+  async function doSavingsDeposit(amountStr){
+    const acct = accounts[currentAccountNumber];
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0){ setMessage("error","Enter a valid amount."); render(); return; }
+    if (amount > acct.balance){ setMessage("error","You do not have enough money."); render(); return; }
+    acct.balance -= amount;
+    acct.savings += amount;
+    pushTx(acct, "Savings deposit", -amount);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Moved " + fmt(amount) + " to savings.");
+    dashPanel = null; render();
+  }
+
+  async function doSavingsWithdraw(amountStr){
+    const acct = accounts[currentAccountNumber];
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0){ setMessage("error","Enter a valid amount."); render(); return; }
+    if (amount > acct.savings){ setMessage("error","Not enough money in savings."); render(); return; }
+    acct.savings -= amount;
+    acct.balance += amount;
+    pushTx(acct, "Savings withdrawal", amount);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Moved " + fmt(amount) + " from savings.");
+    dashPanel = null; render();
+  }
+
+  async function doInterest(){
+    const acct = accounts[currentAccountNumber];
+    const curInt = acct.balance * 0.02;
+    acct.balance += curInt;
+    pushTx(acct, "Interest", curInt);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Interest applied to your current balance: " + fmt(curInt) + ". (Savings earn 1% automatically once per day, at login.)");
+    dashPanel = null; render();
+  }
+
+  async function doSalary(profession, incomeStr){
+    const acct = accounts[currentAccountNumber];
+    const income = parseFloat(incomeStr);
+    if (!profession.trim()){ setMessage("error","Enter your profession."); render(); return; }
+    if (isNaN(income) || income <= 0){ setMessage("error","Enter a valid income."); render(); return; }
+    if (income > 50000){ setMessage("error","Maximum salary is 50,000."); render(); return; }
+    acct.profession = profession.trim();
+    acct.income = income;
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Salary activated: " + fmt(income) + " will be paid automatically each time you log in.");
+    dashPanel = null; render();
+  }
+
+  async function doLoan(amountStr){
+    const acct = accounts[currentAccountNumber];
+    if (acct.income <= 0){ setMessage("error","Set up your salary first."); render(); return; }
+    if (acct.loan > 0){ setMessage("error","You already have a loan."); render(); return; }
+    const maxLoan = acct.income * 2;
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0){ setMessage("error","Enter a valid amount."); render(); return; }
+    if (amount > maxLoan){ setMessage("error","Loan rejected. Your maximum loan is " + fmt(maxLoan) + "."); render(); return; }
+    acct.loan = amount;
+    acct.balance += amount;
+    pushTx(acct, "Loan received", amount);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Loan approved for " + fmt(amount) + ".");
+    dashPanel = null; render();
+  }
+
+  async function doRepay(amountStr){
+    const acct = accounts[currentAccountNumber];
+    if (acct.loan === 0){ setMessage("error","You do not have a loan."); render(); return; }
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0){ setMessage("error","Enter a valid amount."); render(); return; }
+    if (amount > acct.balance){ setMessage("error","You do not have enough money."); render(); return; }
+    if (amount > acct.loan){ setMessage("error","You only owe " + fmt(acct.loan) + "."); render(); return; }
+    acct.loan -= amount;
+    acct.balance -= amount;
+    pushTx(acct, "Loan repayment", -amount);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Repaid " + fmt(amount) + ". Remaining loan: " + fmt(acct.loan));
+    dashPanel = null; render();
+  }
+
+  async function doChangePin(oldPin, newPin){
+    const acct = accounts[currentAccountNumber];
+    if (acct.pin !== oldPin){ setMessage("error","Incorrect current PIN."); render(); return; }
+    if (!/^\d{4}$/.test(newPin)){ setMessage("error","New PIN must be exactly 4 digits."); render(); return; }
+    acct.pin = newPin;
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "PIN changed successfully.");
+    dashPanel = null; render();
+  }
+
+  // ---------- Market: buy/sell ----------
+  async function doMarketBuy(symbol, qtyStr){
+    const acct = accounts[currentAccountNumber];
+    const qty = parseInt(qtyStr, 10);
+    const price = market.prices[symbol];
+    if (!price){ setMessage("error","Unknown stock."); render(); return; }
+    if (isNaN(qty) || qty <= 0){ setMessage("error","Enter a valid quantity."); render(); return; }
+    const cost = Math.round(qty * price * 100) / 100;
+    if (cost > acct.balance){ setMessage("error","Insufficient funds for that purchase."); render(); return; }
+    if (!acct.portfolio) acct.portfolio = {};
+    acct.balance -= cost;
+    acct.portfolio[symbol] = (acct.portfolio[symbol] || 0) + qty;
+    pushTx(acct, "Bought " + qty + " " + symbol + " @ " + fmt(price), -cost);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Bought " + qty + " shares of " + symbol + " for " + fmt(cost) + ".");
+    render();
+  }
+
+  async function doMarketSell(symbol, qtyStr){
+    const acct = accounts[currentAccountNumber];
+    const qty = parseInt(qtyStr, 10);
+    const price = market.prices[symbol];
+    if (!acct.portfolio) acct.portfolio = {};
+    const held = acct.portfolio[symbol] || 0;
+    if (isNaN(qty) || qty <= 0){ setMessage("error","Enter a valid quantity."); render(); return; }
+    if (qty > held){ setMessage("error","You only hold " + held + " shares of " + symbol + "."); render(); return; }
+    const proceeds = Math.round(qty * price * 100) / 100;
+    acct.balance += proceeds;
+    acct.portfolio[symbol] = held - qty;
+    if (acct.portfolio[symbol] === 0) delete acct.portfolio[symbol];
+    pushTx(acct, "Sold " + qty + " " + symbol + " @ " + fmt(price), proceeds);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Sold " + qty + " shares of " + symbol + " for " + fmt(proceeds) + ".");
+    render();
+  }
+
+  // ---------- Spending categories ----------
+  const SPEND_ITEMS = {
+    Rent:          [{ name: "Studio flat (weekly)", cost: 120 }, { name: "1-bedroom (weekly)", cost: 200 }, { name: "House (weekly)", cost: 350 }],
+    Food:          [{ name: "Groceries", cost: 40 }, { name: "Takeout", cost: 25 }, { name: "Fancy dinner", cost: 75 }],
+    Clothes:       [{ name: "Basics", cost: 30 }, { name: "Outfit", cost: 80 }, { name: "Designer piece", cost: 250 }],
+    Shopping:      [{ name: "Gadget", cost: 150 }, { name: "Furniture", cost: 220 }, { name: "Random splurge", cost: 60 }],
+    Entertainment: [{ name: "Movie night", cost: 20 }, { name: "Concert ticket", cost: 90 }, { name: "Weekend trip", cost: 300 }]
+  };
+
+  const HOUSES = [
+    { name: "Cozy Cottage", price: 2000 },
+    { name: "Suburban Home", price: 5000 },
+    { name: "Downtown Condo", price: 8000 },
+    { name: "Lakeside Villa", price: 15000 },
+    { name: "Hilltop Mansion", price: 30000 },
+    { name: "Billion Dollar House", price: 2427523574623756472364576237854682736576238756327846587362785687326572635762385762837645872364587632875632876587326587326587632875687356873265786235477238456238754687236587236576237856782346578326457836258763274856382745632, limit: 5 }
+  ];
+
+  function houseOwnerCount(name){
+    return Object.values(accounts).reduce((sum, a) => sum + (a.houses || []).filter(h => h.name === name).length, 0);
+  }
+
+  async function doSpend(category, itemName, cost, method){
+    const acct = accounts[currentAccountNumber];
+    if (method === "points"){
+      if (acct.rewards < cost){ setMessage("error","Not enough reward points (need " + cost + ")."); render(); return; }
+      acct.rewards -= cost;
+      pushTx(acct, category + ": " + itemName + " (paid with " + cost + " points)", 0);
+    }else{
+      if (cost > acct.balance){ setMessage("error","Insufficient funds."); render(); return; }
+      acct.balance -= cost;
+      pushTx(acct, category + ": " + itemName, -cost);
+    }
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Bought \"" + itemName + "\".");
+    render();
+  }
+
+  async function doBuyHouse(name, price, method){
+    const acct = accounts[currentAccountNumber];
+    if (!acct.houses) acct.houses = [];
+    const house = HOUSES.find(h => h.name === name);
+    if (house && house.limit && houseOwnerCount(name) >= house.limit){
+      setMessage("error", "\"" + name + "\" is sold out — only " + house.limit + " exist and they're all owned."); render(); return;
+    }
+    if (method === "points"){
+      if (acct.rewards < price){ setMessage("error","Not enough reward points."); render(); return; }
+      acct.rewards -= price;
+      pushTx(acct, "Bought house: " + name + " (paid with points)", 0);
+    }else{
+      if (price > acct.balance){ setMessage("error","Insufficient funds."); render(); return; }
+      acct.balance -= price;
+      pushTx(acct, "Bought house: " + name, -price);
+    }
+    acct.houses.push({ name, price });
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Congratulations on your new home: " + name + "!");
+    render();
+  }
+
+  // ---------- Fixed deposit (exactly 500) ----------
+  const FD_AMOUNT = 500;
+  const FD_MATURE_DAYS = 1;
+  const FD_RETURN = 525; // 5% fixed return on maturity
+
+  async function doOpenFD(){
+    const acct = accounts[currentAccountNumber];
+    if (acct.fixedDeposit){ setMessage("error","You already have an active fixed deposit."); render(); return; }
+    if (acct.balance < FD_AMOUNT){ setMessage("error","You need " + fmt(FD_AMOUNT) + " to open a fixed deposit."); render(); return; }
+    acct.balance -= FD_AMOUNT;
+    acct.fixedDeposit = { amount: FD_AMOUNT, startDate: todayStr() };
+    pushTx(acct, "Opened fixed deposit", -FD_AMOUNT);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Fixed deposit of " + fmt(FD_AMOUNT) + " opened. Matures in " + FD_MATURE_DAYS + " day.");
+    render();
+  }
+
+  function fdIsMatured(fd){
+    if (!fd) return false;
+    const start = new Date(fd.startDate);
+    const days = (new Date(todayStr()) - start) / 86400000;
+    return days >= FD_MATURE_DAYS;
+  }
+
+  async function doRedeemFD(){
+    const acct = accounts[currentAccountNumber];
+    if (!acct.fixedDeposit){ setMessage("error","No active fixed deposit."); render(); return; }
+    if (!fdIsMatured(acct.fixedDeposit)){ setMessage("error","Your fixed deposit hasn't matured yet."); render(); return; }
+    acct.balance += FD_RETURN;
+    pushTx(acct, "Fixed deposit matured", FD_RETURN);
+    acct.fixedDeposit = null;
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Fixed deposit redeemed for " + fmt(FD_RETURN) + ".");
+    render();
+  }
+
+  // ---------- Redeem reward points ----------
+  async function doRedeemPoints(qtyStr){
+    const acct = accounts[currentAccountNumber];
+    const qty = parseInt(qtyStr, 10);
+    if (isNaN(qty) || qty <= 0){ setMessage("error","Enter a valid number of points."); render(); return; }
+    if (qty > acct.rewards){ setMessage("error","You only have " + acct.rewards + " points."); render(); return; }
+    acct.rewards -= qty;
+    acct.balance += qty; // 1 point = 1 unit of cash
+    pushTx(acct, "Redeemed " + qty + " reward points", qty);
+    await persistAccount(currentAccountNumber);
+    setMessage("success", "Redeemed " + qty + " points for " + fmt(qty) + ".");
+    render();
+  }
+
+  function netWorth(acct){
+    let worth = (acct.balance || 0) + (acct.savings || 0) - (acct.loan || 0);
+    const portfolio = acct.portfolio || {};
+    Object.keys(portfolio).forEach(sym => { worth += (market.prices[sym] || 0) * portfolio[sym]; });
+    (acct.houses || []).forEach(h => { worth += h.price; });
+    (acct.collectibles || []).forEach(c => { worth += c.price; });
+    if (acct.fixedDeposit) worth += acct.fixedDeposit.amount;
+    return Math.round(worth * 100) / 100;
+  }
+
+  // ---------- Bidding (auto-bid wars) ----------
+  // Each bidder sets a private maximum. The system automatically resolves the
+  // visible price to just above the second-highest maximum, so competing
+  // auto-bids drive the price up on their own — a classic proxy "bid war."
+  const BID_INCREMENT_PCT = 0.03; // each round the price climbs ~3% past the runner-up's max
+
+  function resolveAuction(auc){
+    const entries = Object.keys(auc.autoBids || {})
+      .map(num => ({ num, max: auc.autoBids[num] }))
+      .filter(e => e.max > 0);
+    if (entries.length === 0){
+      auc.currentBid = null; auc.bidderNum = null; auc.bidderName = null;
+      return;
+    }
+    entries.sort((a,b) => b.max - a.max);
+    const top = entries[0];
+    const second = entries[1];
+    const increment = Math.max(1, Math.round(auc.startPrice * BID_INCREMENT_PCT * 100) / 100);
+    let bid;
+    if (second){
+      bid = Math.min(top.max, Math.round((second.max + increment) * 100) / 100);
+    }else{
+      bid = auc.startPrice;
+    }
+    auc.currentBid = bid;
+    auc.bidderNum = top.num;
+    auc.bidderName = accounts[top.num] ? accounts[top.num].name : "Unknown";
+  }
+
+  async function doSetAutoBid(auctionId, maxStr){
+    const acct = accounts[currentAccountNumber];
+    const auc = auctions.find(a => a.id === auctionId);
+    if (!auc || auc.settled || Date.now() >= auc.endTime){ setMessage("error","That auction has closed."); render(); return; }
+    const max = parseFloat(maxStr);
+    if (isNaN(max) || max <= 0){ setMessage("error","Enter a valid maximum bid."); render(); return; }
+    if (max < auc.startPrice){ setMessage("error","Your maximum must be at least the starting price of " + fmt(auc.startPrice) + "."); render(); return; }
+    if (max > acct.balance){ setMessage("error","Your maximum can't be more than your balance (" + fmt(acct.balance) + ")."); render(); return; }
+    if (!auc.autoBids) auc.autoBids = {};
+    auc.autoBids[currentAccountNumber] = max;
+    resolveAuction(auc);
+    await saveAuctions();
+    if (auc.bidderNum === currentAccountNumber){
+      setMessage("success", "You're leading \"" + auc.item + "\" at " + fmt(auc.currentBid) + " (your max: " + fmt(max) + ").");
+    }else{
+      setMessage("success", "Max bid of " + fmt(max) + " set — but someone else's max is currently higher on \"" + auc.item + "\".");
+    }
+    render();
+  }
+
+  // ---------- Admin ----------
+  function goAdminFromDashboard(){
+    screen = "admin"; adminView = null; adminSelected = null;
+    clearMessage(); render();
+  }
+
+  function adminLogout(){
+    // Admin is now just a permission on your own bank account, so "logging out"
+    // of the admin panel just returns you to your normal dashboard.
+    screen = "dashboard"; adminView = null; adminSelected = null;
+    clearMessage(); render();
+  }
+
+  function openAdminList(){ adminView = null; adminSelected = null; clearMessage(); render(); }
+  function openAdminEdit(accNum){ adminView = "edit"; adminSelected = accNum; clearMessage(); render(); }
+  function openAdminDelete(accNum){ adminView = "delete"; adminSelected = accNum; clearMessage(); render(); }
+  function openAdminCreate(){ adminView = "create"; adminSelected = null; clearMessage(); render(); }
+  function openAdminAccess(){ adminView = "access"; clearMessage(); render(); }
+
+  async function doAdminSave(accNum, fields){
+    const acct = accounts[accNum];
+    if (!acct){ setMessage("error","Account no longer exists."); render(); return; }
+    const balance = parseFloat(fields.balance);
+    const savings = parseFloat(fields.savings);
+    const loan = parseFloat(fields.loan);
+    const rewards = parseInt(fields.rewards, 10);
+    const income = parseFloat(fields.income);
+    if ([balance,savings,loan,rewards,income].some(v => isNaN(v))){
+      setMessage("error","All numeric fields must be valid numbers."); render(); return;
+    }
+    if (fields.pin && !/^\d{4}$/.test(fields.pin)){
+      setMessage("error","PIN must be exactly 4 digits."); render(); return;
+    }
+    acct.name = fields.name.trim() || acct.name;
+    acct.balance = balance;
+    acct.savings = savings;
+    acct.loan = loan;
+    acct.rewards = rewards;
+    acct.income = income;
+    acct.profession = fields.profession.trim();
+    if (fields.pin) acct.pin = fields.pin;
+    pushTx(acct, "Admin adjustment", 0);
+    await persistAccount(accNum);
+    setMessage("success", "Account " + accNum + " updated.");
+    adminView = null; adminSelected = null; render();
+  }
+
+  async function doAdminCreate(name, pin, balanceStr){
+    if (!name.trim()){ setMessage("error","Enter a name."); render(); return; }
+    if (!/^\d{4}$/.test(pin)){ setMessage("error","PIN must be exactly 4 digits."); render(); return; }
+    if (Object.keys(accounts).length >= 90){ setMessage("error","No more account numbers are available."); render(); return; }
+    const balance = parseFloat(balanceStr) || 0;
+    const accNum = newAccountNumber();
+    accounts[accNum] = {
+      name: name.trim(), balance, savings: 0, loan: 0, pin,
+      rewards: 0, transactions: [], transaction_number: 1000,
+      income: 0, profession: "", portfolio: {}, houses: [], collectibles: [],
+      fixedDeposit: null, lastSavingsDate: todayStr(), isAdmin: false
+    };
+    pushTx(accounts[accNum], "Account opened by admin", balance);
+    await persistAccount(accNum);
+    setMessage("success", "Account " + accNum + " created.");
+    adminView = null; render();
+  }
+
+  async function doAdminDelete(accNum){
+    delete accounts[accNum];
+    await deleteAccountDoc(accNum);
+    if (currentAccountNumber === accNum) currentAccountNumber = null;
+    setMessage("success", "Account " + accNum + " deleted.");
+    adminView = null; adminSelected = null; render();
+  }
+
+  async function doAdminSetAccess(accNum, granted){
+    if (accNum === PERMANENT_ADMIN){ setMessage("error","Account " + PERMANENT_ADMIN + " is always an admin and can't be changed."); render(); return; }
+    const acct = accounts[accNum];
+    if (!acct){ setMessage("error","Account no longer exists."); render(); return; }
+    acct.isAdmin = granted;
+    await persistAccount(accNum);
+    setMessage("success", "Account " + accNum + " is " + (granted ? "now an admin." : "no longer an admin."));
+    render();
+  }
+
+  function openAdminMarket(){ adminView = "market"; clearMessage(); render(); }
+
+  async function doAdminRig(symbol, valueStr){
+    const v = valueStr.trim();
+    if (v === ""){
+      market.rigged[symbol] = null;
+    }else{
+      const num = parseFloat(v);
+      if (isNaN(num) || num <= 0){ setMessage("error","Enter a positive number, or leave blank to un-rig."); render(); return; }
+      market.rigged[symbol] = num;
+      market.prices[symbol] = num;
+    }
+    await saveMarket();
+    setMessage("success", v === "" ? (symbol + " is floating freely again.") : (symbol + " pinned at " + fmt(Number(v)) + "."));
+    render();
+  }
+
+  function openAdminAuctions(){ adminView = "auctions"; clearMessage(); render(); }
+
+  async function doAdminCreateAuction(item, startPriceStr, minutesStr){
+    if (!item.trim()){ setMessage("error","Enter an item name."); render(); return; }
+    const startPrice = parseFloat(startPriceStr);
+    const minutes = parseFloat(minutesStr);
+    if (isNaN(startPrice) || startPrice <= 0){ setMessage("error","Enter a valid starting price."); render(); return; }
+    if (isNaN(minutes) || minutes <= 0){ setMessage("error","Enter a valid duration in minutes."); render(); return; }
+    auctions.push({
+      id: newAuctionId(), item: item.trim(), startPrice,
+      currentBid: null, bidderNum: null, bidderName: null, autoBids: {},
+      endTime: Date.now() + minutes * 60000, settled: false
+    });
+    await saveAuctions();
+    setMessage("success", "Auction for \"" + item.trim() + "\" is live for " + minutes + " minute(s).");
+    render();
+  }
+
+  async function doAdminCancelAuction(auctionId){
+    auctions = auctions.filter(a => a.id !== auctionId);
+    await saveAuctions();
+    setMessage("success", "Auction cancelled.");
+    render();
+  }
+
+  // ---------- Rendering ----------
+  const app = document.getElementById("app");
+
+  function el(html){
+    const t = document.createElement("template");
+    t.innerHTML = html.trim();
+    return t.content.firstChild;
+  }
+
+  function messageHtml(){
+    if (!message) return "";
+    const cls = message.type === "error" ? "error-msg" : "success-msg";
+    return `<div class="${cls}">${escapeHtml(message.text)}</div>`;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+
+  function rewardLevel(pts){
+    if (pts >= 20) return "GOLD";
+    if (pts >= 10) return "SILVER";
+    if (pts >= 5) return "BRONZE";
+    return "STARTER";
+  }
+
+  function renderWelcome(){
+    app.innerHTML = `
+      <div class="welcome-hero">
+        <div class="mark">EST. TODAY &middot; PERSONAL LEDGER</div>
+        <h1>Shreyash Bank</h1>
+        <p>A small, honest ledger for your money — accounts, savings, loans, and a running record of every transaction.</p>
+      </div>
+      <div class="stat-line">${Object.keys(accounts).length} account(s) on this ledger</div>
+      <div class="body-area" style="padding-top:0;">
+        ${messageHtml()}
+        <div class="stack">
+          <button class="btn-primary" id="btn-login">Use existing account</button>
+          <button class="btn-ghost" id="btn-create">Open a new account</button>
+        </div>
+      </div>
+    `;
+    app.querySelector("#btn-login").onclick = goLogin;
+    app.querySelector("#btn-create").onclick = goCreate;
+  }
+
+  function renderAdmin(){
+    let body = "";
+
+    if (adminView === null){
+      const rows = Object.keys(accounts).sort().map(accNum => {
+        const a = accounts[accNum];
+        return `
+          <div class="tx-row" style="align-items:center;">
+            <div class="desc">
+              <span class="tx-id">${accNum}</span>${escapeHtml(a.name)}
+              <div class="hint" style="margin-top:2px;">Bal ${fmt(a.balance)} &middot; Sav ${fmt(a.savings)} &middot; Loan ${fmt(a.loan)}</div>
+            </div>
+            <div class="row" style="flex:0 0 auto; gap:6px;">
+              <button class="btn-ghost" style="width:auto; padding:8px 10px; font-size:12.5px;" data-edit="${accNum}">Manage</button>
+              <button class="btn-ghost" style="width:auto; padding:8px 10px; font-size:12.5px; color:var(--red); border-color:rgba(140,74,58,0.4);" data-del="${accNum}">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      body = `
+        <div class="panel">
+          <h2>All accounts (${Object.keys(accounts).length})</h2>
+          ${messageHtml()}
+          <div class="tx-list" style="max-height:360px;">
+            ${rows || '<div class="hint">No accounts yet.</div>'}
+          </div>
+          <div class="divider"></div>
+          <div class="stack">
+            <button class="btn-primary" id="btn-new">Create account</button>
+            <button class="btn-ghost" id="btn-market">Rig market</button>
+            <button class="btn-ghost" id="btn-auctions">Manage auctions</button>
+            <button class="btn-ghost" id="btn-access">Manage admin access</button>
+            <button class="btn-ghost" id="btn-logout">Back to my account</button>
+          </div>
+        </div>
+      `;
+    } else if (adminView === "edit"){
+      const a = accounts[adminSelected];
+      if (!a){ adminView = null; render(); return; }
+      body = `
+        <div class="panel">
+          <h2>Manage account ${adminSelected}</h2>
+          ${messageHtml()}
+          <div class="field"><label>Name</label><input id="af-name" value="${escapeHtml(a.name)}" /></div>
+          <div class="row">
+            <div class="field"><label>Balance</label><input id="af-balance" type="number" value="${a.balance}" /></div>
+            <div class="field"><label>Savings</label><input id="af-savings" type="number" value="${a.savings}" /></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Loan</label><input id="af-loan" type="number" value="${a.loan}" /></div>
+            <div class="field"><label>Rewards</label><input id="af-rewards" type="number" value="${a.rewards}" /></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Profession</label><input id="af-profession" value="${escapeHtml(a.profession||'')}" /></div>
+            <div class="field"><label>Monthly income</label><input id="af-income" type="number" value="${a.income||0}" /></div>
+          </div>
+          <div class="field">
+            <label>Reset PIN (optional)</label>
+            <input id="af-pin" inputmode="numeric" maxlength="4" placeholder="Leave blank to keep current PIN" />
+          </div>
+          <div class="stack">
+            <button class="btn-primary" id="btn-save">Save changes</button>
+            <button class="btn-ghost" id="btn-cancel">Cancel</button>
+          </div>
+        </div>
+      `;
+    } else if (adminView === "delete"){
+      const a = accounts[adminSelected];
+      body = `
+        <div class="panel">
+          <h2>Delete account ${adminSelected}?</h2>
+          <p style="font-size:14px;color:#5b5342;">This permanently removes ${a ? escapeHtml(a.name) : "this account"} and its full transaction history. This cannot be undone.</p>
+          ${messageHtml()}
+          <div class="stack">
+            <button class="btn-primary" style="background:var(--red);" id="btn-confirm-del">Yes, delete permanently</button>
+            <button class="btn-ghost" id="btn-cancel">Cancel</button>
+          </div>
+        </div>
+      `;
+    } else if (adminView === "create"){
+      body = `
+        <div class="panel">
+          <h2>Create account</h2>
+          ${messageHtml()}
+          <div class="field"><label>Name</label><input id="af-name" placeholder="e.g. Jordan Lee" /></div>
+          <div class="field"><label>4-digit PIN</label><input id="af-pin" inputmode="numeric" maxlength="4" placeholder="••••" /></div>
+          <div class="field"><label>Starting balance</label><input id="af-balance" type="number" placeholder="0" /></div>
+          <div class="hint">No opening fee — this bypasses the normal 200 fee since you're creating it as admin.</div>
+          <div class="stack">
+            <button class="btn-primary" id="btn-save">Create</button>
+            <button class="btn-ghost" id="btn-cancel">Cancel</button>
+          </div>
+        </div>
+      `;
+    } else if (adminView === "access"){
+      body = `
+        <div class="panel">
+          <h2>Manage admin access</h2>
+          <div class="hint" style="margin-bottom:12px;">Account ${PERMANENT_ADMIN} is permanently an admin. Toggle access for anyone else.</div>
+          ${messageHtml()}
+          <div class="tx-list">
+            ${Object.keys(accounts).sort().map(n => {
+              const a = accounts[n];
+              const admin = isAccountAdmin(n);
+              const locked = n === PERMANENT_ADMIN;
+              return `
+                <div class="tx-row" style="align-items:center;">
+                  <div class="desc">
+                    <span class="tx-id">${n}</span>${escapeHtml(a.name)} ${admin ? '<span class="badge" style="margin-left:6px;">ADMIN</span>' : ''}
+                  </div>
+                  <button class="btn-ghost" style="width:auto; padding:8px 10px; font-size:12.5px;" data-access="${n}" ${locked ? 'disabled' : ''}>
+                    ${admin ? 'Revoke' : 'Grant'}
+                  </button>
+                </div>
+              `;
+            }).join("")}
+          </div>
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="btn-cancel">Close</button></div>
+        </div>
+      `;
+    } else if (adminView === "market"){
+      body = `
+        <div class="panel">
+          <h2>Rig the market</h2>
+          <div class="hint" style="margin-bottom:12px;">Leave a stock's field blank to let it float randomly again. Set a number to pin it exactly at that price (updates immediately and holds there).</div>
+          ${messageHtml()}
+          ${STOCKS.map(s => {
+            const rig = market.rigged[s.symbol];
+            const isRigged = rig !== null && rig !== undefined;
+            return `
+              <div class="field">
+                <label>${s.symbol} — ${escapeHtml(s.name)} (current: ${fmt(market.prices[s.symbol]||0)}) ${isRigged ? '<span class="badge" style="margin-left:6px;">RIGGED</span>' : ''}</label>
+                <div class="row">
+                  <input type="number" id="rig-${s.symbol}" placeholder="Leave blank to float" value="${isRigged ? rig : ''}" />
+                  <button class="btn-ghost" style="flex:0 0 auto; width:auto; padding:11px 16px;" data-rig="${s.symbol}">Apply</button>
+                </div>
+              </div>
+            `;
+          }).join("")}
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="btn-cancel">Close</button></div>
+        </div>
+      `;
+    } else if (adminView === "auctions"){
+      const now = Date.now();
+      const active = auctions.filter(a => !a.settled && a.endTime > now).sort((x,y) => x.endTime - y.endTime);
+      const past = auctions.filter(a => a.settled || a.endTime <= now).sort((x,y) => y.endTime - x.endTime).slice(0, 8);
+      body = `
+        <div class="panel">
+          <h2>Manage auctions</h2>
+          ${messageHtml()}
+          <div class="field"><label>Item name</label><input id="au-item" placeholder="e.g. Vintage Watch" /></div>
+          <div class="row">
+            <div class="field"><label>Starting price</label><input id="au-price" type="number" placeholder="e.g. 100" /></div>
+            <div class="field"><label>Duration (minutes)</label><input id="au-minutes" type="number" placeholder="e.g. 5" /></div>
+          </div>
+          <button class="btn-primary" id="au-create">Start auction</button>
+          <div class="divider"></div>
+          <h2 style="margin-bottom:8px;">Active (${active.length})</h2>
+          <div class="tx-list" style="margin-bottom:16px;">
+            ${active.length === 0 ? '<div class="hint">None running.</div>' : active.map(a => `
+              <div class="tx-row" style="align-items:center;">
+                <div class="desc">
+                  ${escapeHtml(a.item)}
+                  <div class="hint" style="margin-top:2px;">Bid: ${fmt(a.currentBid != null ? a.currentBid : a.startPrice)}${a.bidderName ? " by " + escapeHtml(a.bidderName) : ""}</div>
+                </div>
+                <button class="btn-ghost" style="width:auto; padding:8px 10px; font-size:12.5px; color:var(--red); border-color:rgba(140,74,58,0.4);" data-cancel-auc="${a.id}">Cancel</button>
+              </div>
+            `).join("")}
+          </div>
+          ${past.length ? `
+            <h2 style="margin-bottom:8px;">Recent</h2>
+            <div class="tx-list">
+              ${past.map(a => `
+                <div class="tx-row">
+                  <div class="desc">${escapeHtml(a.item)}</div>
+                  <div class="amt pos">${a.bidderName ? escapeHtml(a.bidderName) + " — " + fmt(a.currentBid) : "No winner"}</div>
+                </div>
+              `).join("")}
+            </div>
+          ` : ""}
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="btn-cancel">Close</button></div>
+        </div>
+      `;
+    }
+
+    app.innerHTML = `
+      <div class="acct-strip">
+        <div class="who"><b>Admin panel</b></div>
+        <div class="num"><span class="badge">FULL ACCESS</span></div>
+      </div>
+      ${body}
+    `;
+
+    if (adminView === null){
+      app.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openAdminEdit(b.getAttribute("data-edit")));
+      app.querySelectorAll("[data-del]").forEach(b => b.onclick = () => openAdminDelete(b.getAttribute("data-del")));
+      app.querySelector("#btn-new").onclick = openAdminCreate;
+      app.querySelector("#btn-market").onclick = openAdminMarket;
+      app.querySelector("#btn-auctions").onclick = openAdminAuctions;
+      app.querySelector("#btn-access").onclick = openAdminAccess;
+      app.querySelector("#btn-logout").onclick = adminLogout;
+    } else if (adminView === "edit"){
+      app.querySelector("#btn-save").onclick = () => doAdminSave(adminSelected, {
+        name: app.querySelector("#af-name").value,
+        balance: app.querySelector("#af-balance").value,
+        savings: app.querySelector("#af-savings").value,
+        loan: app.querySelector("#af-loan").value,
+        rewards: app.querySelector("#af-rewards").value,
+        profession: app.querySelector("#af-profession").value,
+        income: app.querySelector("#af-income").value,
+        pin: app.querySelector("#af-pin").value
+      });
+      app.querySelector("#btn-cancel").onclick = openAdminList;
+    } else if (adminView === "delete"){
+      app.querySelector("#btn-confirm-del").onclick = () => doAdminDelete(adminSelected);
+      app.querySelector("#btn-cancel").onclick = openAdminList;
+    } else if (adminView === "create"){
+      app.querySelector("#btn-save").onclick = () => doAdminCreate(
+        app.querySelector("#af-name").value,
+        app.querySelector("#af-pin").value,
+        app.querySelector("#af-balance").value
+      );
+      app.querySelector("#btn-cancel").onclick = openAdminList;
+    } else if (adminView === "access"){
+      app.querySelectorAll("[data-access]").forEach(b => b.onclick = () => {
+        const n = b.getAttribute("data-access");
+        doAdminSetAccess(n, !isAccountAdmin(n));
+      });
+      app.querySelector("#btn-cancel").onclick = openAdminList;
+    } else if (adminView === "market"){
+      app.querySelectorAll("[data-rig]").forEach(b => b.onclick = () => {
+        const sym = b.getAttribute("data-rig");
+        doAdminRig(sym, app.querySelector("#rig-" + sym).value);
+      });
+      app.querySelector("#btn-cancel").onclick = openAdminList;
+    } else if (adminView === "auctions"){
+      app.querySelector("#au-create").onclick = () => doAdminCreateAuction(
+        app.querySelector("#au-item").value,
+        app.querySelector("#au-price").value,
+        app.querySelector("#au-minutes").value
+      );
+      app.querySelectorAll("[data-cancel-auc]").forEach(b => b.onclick = () => doAdminCancelAuction(b.getAttribute("data-cancel-auc")));
+      app.querySelector("#btn-cancel").onclick = openAdminList;
+    }
+  }
+
+  function renderCreate(){
+    app.innerHTML = `
+      <header class="brand">
+        <div class="mark">OPEN AN ACCOUNT</div>
+        <h1>Let's set you up</h1>
+        <p>A one-time 200 opening fee applies, deducted from your new account.</p>
+      </header>
+      <div class="body-area">
+        ${messageHtml()}
+        <div class="field">
+          <label>Full name</label>
+          <input type="text" id="in-name" placeholder="e.g. Shreyash Patel" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label>Choose a 4-digit PIN</label>
+          <input type="password" id="in-pin" inputmode="numeric" maxlength="4" placeholder="••••" />
+          <div class="hint">You'll use this PIN to log in each time.</div>
+        </div>
+        <div class="stack">
+          <button class="btn-primary" id="btn-submit">Create account &middot; pay 200 fee</button>
+          <button class="btn-ghost" id="btn-back">Back</button>
+        </div>
+      </div>
+    `;
+    app.querySelector("#btn-submit").onclick = () => {
+      doCreate(app.querySelector("#in-name").value, app.querySelector("#in-pin").value);
+    };
+    app.querySelector("#btn-back").onclick = goWelcome;
+  }
+
+  function renderLogin(){
+    app.innerHTML = `
+      <header class="brand">
+        <div class="mark">LOG IN</div>
+        <h1>Welcome back</h1>
+        <p>Enter your account number and PIN.</p>
+      </header>
+      <div class="body-area">
+        ${messageHtml()}
+        <div class="field">
+          <label>Account number</label>
+          <input type="text" id="in-acct" inputmode="numeric" placeholder="e.g. 42" />
+        </div>
+        <div class="field">
+          <label>PIN</label>
+          <input type="password" id="in-pin" inputmode="numeric" maxlength="4" placeholder="••••" />
+        </div>
+        <div class="stack">
+          <button class="btn-primary" id="btn-submit">Log in</button>
+          <button class="btn-ghost" id="btn-back">Back</button>
+        </div>
+      </div>
+    `;
+    app.querySelector("#btn-submit").onclick = () => {
+      doLogin(app.querySelector("#in-acct").value.trim(), app.querySelector("#in-pin").value);
+    };
+    app.querySelector("#btn-back").onclick = goWelcome;
+    app.querySelector("#in-pin").addEventListener("keydown", e => {
+      if (e.key === "Enter") app.querySelector("#btn-submit").click();
+    });
+  }
+
+  function panelForm(title, fields, submitLabel, onSubmit){
+    const fieldsHtml = fields.map((f,i) => `
+      <div class="field">
+        <label>${escapeHtml(f.label)}</label>
+        <input type="${f.type || 'text'}" id="pf-${i}" ${f.numeric ? 'inputmode="decimal"' : ''} placeholder="${escapeHtml(f.placeholder||'')}" ${f.attrs||''} />
+        ${f.hint ? `<div class="hint">${escapeHtml(f.hint)}</div>` : ""}
+      </div>
+    `).join("");
+    return `
+      <div class="panel">
+        <h2>${escapeHtml(title)}</h2>
+        ${messageHtml()}
+        ${fieldsHtml}
+        <div class="stack">
+          <button class="btn-primary" id="panel-submit">${escapeHtml(submitLabel)}</button>
+          <button class="btn-ghost" id="panel-cancel">Cancel</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function wirePanel(fields, onSubmit){
+    app.querySelector("#panel-submit").onclick = () => {
+      const values = fields.map((f,i) => app.querySelector("#pf-"+i).value);
+      onSubmit(...values);
+    };
+    app.querySelector("#panel-cancel").onclick = closePanel;
+  }
+
+  function renderDashboard(){
+    const acct = accounts[currentAccountNumber];
+    if (!acct){ logout(); return; }
+
+    let panelHtml = "";
+    let wire = null;
+
+    if (dashPanel === "withdraw"){
+      panelHtml = panelForm("Withdraw", [
+        {label:"Amount", type:"number", placeholder:"e.g. 100", hint:"Maximum 500 per withdrawal."}
+      ], "Withdraw", null);
+      wire = () => wirePanel([{}], (amt) => doWithdraw(amt));
+    } else if (dashPanel === "deposit"){
+      panelHtml = panelForm("Deposit", [
+        {label:"Amount", type:"number", placeholder:"e.g. 250", hint:"Maximum 500 per deposit."}
+      ], "Deposit", null);
+      wire = () => wirePanel([{}], (amt) => doDeposit(amt));
+    } else if (dashPanel === "transfer"){
+      panelHtml = panelForm("Transfer", [
+        {label:"Receiver account number", placeholder:"e.g. 17"},
+        {label:"Amount", type:"number", placeholder:"e.g. 50"}
+      ], "Send transfer", null);
+      wire = () => wirePanel([{},{}], (recv, amt) => doTransfer(recv.trim(), amt));
+    } else if (dashPanel === "history"){
+      panelHtml = `
+        <div class="panel">
+          <h2>Transaction history</h2>
+          ${renderTxList(acct.transactions)}
+          <div class="footer-nav"><button class="btn-ghost" id="panel-cancel">Close</button></div>
+        </div>
+      `;
+      wire = () => { app.querySelector("#panel-cancel").onclick = closePanel; };
+    } else if (dashPanel === "statement"){
+      panelHtml = `
+        <div class="panel">
+          <h2>Account statement</h2>
+          <div class="stack" style="font-family:var(--mono); font-size:13.5px;">
+            <div>Account holder — ${escapeHtml(acct.name)}</div>
+            <div>Account number — ${currentAccountNumber}</div>
+            <div>Current balance — ${fmt(acct.balance)}</div>
+            <div>Savings — ${fmt(acct.savings)}</div>
+            <div>Profession — ${escapeHtml(acct.profession || "—")}</div>
+            <div>Monthly income — ${acct.income ? fmt(acct.income) : "—"}</div>
+            <div>Loan — ${fmt(acct.loan)}</div>
+            <div>Reward points — ${acct.rewards} (${rewardLevel(acct.rewards)})</div>
+            <div>Transactions — ${acct.transactions.length}</div>
+          </div>
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="panel-cancel">Close</button></div>
+        </div>
+      `;
+      wire = () => { app.querySelector("#panel-cancel").onclick = closePanel; };
+    } else if (dashPanel === "savingsDeposit"){
+      panelHtml = panelForm("Move to savings", [
+        {label:"Amount", type:"number", placeholder:"e.g. 100"}
+      ], "Move to savings", null);
+      wire = () => wirePanel([{}], (amt) => doSavingsDeposit(amt));
+    } else if (dashPanel === "savingsWithdraw"){
+      panelHtml = panelForm("Withdraw from savings", [
+        {label:"Amount", type:"number", placeholder:"e.g. 50"}
+      ], "Withdraw from savings", null);
+      wire = () => wirePanel([{}], (amt) => doSavingsWithdraw(amt));
+    } else if (dashPanel === "interest"){
+      panelHtml = `
+        <div class="panel">
+          <h2>Add interest</h2>
+          <p style="font-size:14px;color:#5b5342;">Applies 2% interest to your current balance. (Savings already earn 1% automatically, once per day, whenever you log in.)</p>
+          ${messageHtml()}
+          <div class="stack">
+            <button class="btn-primary" id="btn-apply-interest">Apply interest</button>
+            <button class="btn-ghost" id="panel-cancel">Cancel</button>
+          </div>
+        </div>
+      `;
+      wire = () => {
+        app.querySelector("#btn-apply-interest").onclick = doInterest;
+        app.querySelector("#panel-cancel").onclick = closePanel;
+      };
+    } else if (dashPanel === "rewards"){
+      panelHtml = `
+        <div class="panel">
+          <h2>Rewards</h2>
+          <div style="font-family:var(--mono); font-size:15px;">
+            <div>Points — ${acct.rewards}</div>
+            <div style="margin-top:6px;">Level — <span class="badge">${rewardLevel(acct.rewards)}</span></div>
+          </div>
+          <div class="divider"></div>
+          ${messageHtml()}
+          <div class="field">
+            <label>Redeem points for cash (1 point = 1 unit)</label>
+            <input type="number" id="rw-qty" placeholder="e.g. 10" />
+          </div>
+          <button class="btn-primary" id="rw-redeem">Redeem</button>
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="panel-cancel">Close</button></div>
+        </div>
+      `;
+      wire = () => {
+        app.querySelector("#rw-redeem").onclick = () => doRedeemPoints(app.querySelector("#rw-qty").value);
+        app.querySelector("#panel-cancel").onclick = closePanel;
+      };
+    } else if (dashPanel === "salary"){
+      panelHtml = panelForm("Set up salary", [
+        {label:"Profession", placeholder:"e.g. Engineer"},
+        {label:"Monthly income", type:"number", placeholder:"e.g. 3000", hint: acct.income>0 ? ("Currently: "+fmt(acct.income)+" as "+acct.profession) : "Paid automatically each time you log in. Maximum 50,000."}
+      ], "Activate salary", null);
+      wire = () => wirePanel([{},{}], (prof, inc) => doSalary(prof, inc));
+    } else if (dashPanel === "loan"){
+      panelHtml = panelForm("Take a loan", [
+        {label:"Amount", type:"number", placeholder:"e.g. 1000", hint: acct.income>0 ? ("Maximum loan: "+fmt(acct.income*2)) : "Set up your salary first to unlock a loan."}
+      ], "Request loan", null);
+      wire = () => wirePanel([{}], (amt) => doLoan(amt));
+    } else if (dashPanel === "repay"){
+      panelHtml = panelForm("Repay loan", [
+        {label:"Amount", type:"number", placeholder:"e.g. 200", hint:"You owe "+fmt(acct.loan)}
+      ], "Repay", null);
+      wire = () => wirePanel([{}], (amt) => doRepay(amt));
+    } else if (dashPanel === "pin"){
+      panelHtml = panelForm("Change PIN", [
+        {label:"Current PIN", type:"password", attrs:'maxlength="4" inputmode="numeric"'},
+        {label:"New PIN", type:"password", attrs:'maxlength="4" inputmode="numeric"'}
+      ], "Change PIN", null);
+      wire = () => wirePanel([{},{}], (oldPin, newPin) => doChangePin(oldPin, newPin));
+    } else if (dashPanel === "market"){
+      const portfolio = acct.portfolio || {};
+      const rows = STOCKS.map(s => {
+        const price = market.prices[s.symbol] || 0;
+        const held = portfolio[s.symbol] || 0;
+        return `
+          <div class="tx-row" style="align-items:center;">
+            <div class="desc">
+              <span class="tx-id">${s.symbol}</span>${escapeHtml(s.name)}
+              <div class="hint" style="margin-top:2px;">You hold ${held} share${held===1?'':'s'}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:var(--mono); font-size:15px;">${fmt(price)}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+      panelHtml = `
+        <div class="panel">
+          <h2>Stock market</h2>
+          <div class="hint" style="margin-bottom:12px;">Prices update automatically every 10 seconds.</div>
+          ${messageHtml()}
+          <div class="tx-list" style="margin-bottom:16px;">${rows}</div>
+          <div class="field">
+            <label>Stock</label>
+            <select id="mk-symbol">
+              ${STOCKS.map(s => `<option value="${s.symbol}">${s.symbol} — ${escapeHtml(s.name)} (${fmt(market.prices[s.symbol]||0)})</option>`).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label>Quantity</label>
+            <input type="number" id="mk-qty" placeholder="e.g. 5" />
+          </div>
+          <div class="row">
+            <button class="btn-primary" id="mk-buy">Buy</button>
+            <button class="btn-primary" style="background:var(--gold-dim);" id="mk-sell">Sell</button>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn-ghost" id="panel-cancel">Close</button>
+          </div>
+        </div>
+      `;
+      wire = () => {
+        app.querySelector("#mk-buy").onclick = () => doMarketBuy(app.querySelector("#mk-symbol").value, app.querySelector("#mk-qty").value);
+        app.querySelector("#mk-sell").onclick = () => doMarketSell(app.querySelector("#mk-symbol").value, app.querySelector("#mk-qty").value);
+        app.querySelector("#panel-cancel").onclick = closePanel;
+      };
+    } else if (dashPanel === "spend"){
+      const cats = Object.keys(SPEND_ITEMS);
+      panelHtml = `
+        <div class="panel">
+          <h2>Spend</h2>
+          <div class="hint" style="margin-bottom:12px;">Balance: ${fmt(acct.balance)} &middot; Points: ${acct.rewards}</div>
+          ${messageHtml()}
+          ${cats.map(cat => `
+            <div class="field">
+              <label>${escapeHtml(cat)}</label>
+              <div class="stack">
+                ${SPEND_ITEMS[cat].map((it, i) => `
+                  <div class="row" style="align-items:center;">
+                    <div style="flex:1; font-size:14px;">${escapeHtml(it.name)} <span class="hint">(${fmt(it.cost)})</span></div>
+                    <button class="btn-ghost" style="width:auto; padding:8px 10px; font-size:12.5px;" data-spend-cash="${cat}|${i}">Pay cash</button>
+                    <button class="btn-ghost" style="width:auto; padding:8px 10px; font-size:12.5px;" data-spend-points="${cat}|${i}">Pay ${it.cost} pts</button>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `).join("")}
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="panel-cancel">Close</button></div>
+        </div>
+      `;
+      wire = () => {
+        app.querySelectorAll("[data-spend-cash]").forEach(b => b.onclick = () => {
+          const [cat, i] = b.getAttribute("data-spend-cash").split("|");
+          const it = SPEND_ITEMS[cat][parseInt(i,10)];
+          doSpend(cat, it.name, it.cost, "cash");
+        });
+        app.querySelectorAll("[data-spend-points]").forEach(b => b.onclick = () => {
+          const [cat, i] = b.getAttribute("data-spend-points").split("|");
+          const it = SPEND_ITEMS[cat][parseInt(i,10)];
+          doSpend(cat, it.name, it.cost, "points");
+        });
+        app.querySelector("#panel-cancel").onclick = closePanel;
+      };
+    } else if (dashPanel === "houses"){
+      const owned = acct.houses || [];
+      panelHtml = `
+        <div class="panel">
+          <h2>Real estate</h2>
+          <div class="hint" style="margin-bottom:12px;">Balance: ${fmt(acct.balance)} &middot; Points: ${acct.rewards}</div>
+          ${messageHtml()}
+          <div class="stack">
+            ${HOUSES.map((h,i) => {
+              const soldOut = h.limit ? houseOwnerCount(h.name) >= h.limit : false;
+              return `
+              <div class="row" style="align-items:center;">
+                <div style="flex:1; font-size:14px;">
+                  ${escapeHtml(h.name)} <span class="hint">(${fmt(h.price)})</span>
+                  ${h.limit ? `<div class="hint">${houseOwnerCount(h.name)}/${h.limit} owned</div>` : ''}
+                </div>
+                ${soldOut
+                  ? `<span class="badge" style="color:var(--red); border-color:rgba(140,74,58,0.4);">SOLD OUT</span>`
+                  : `
+                    <button class="btn-ghost" style="width:auto; padding:8px 10px; font-size:12.5px;" data-house-cash="${i}">Pay cash</button>
+                    <button class="btn-ghost" style="width:auto; padding:8px 10px; font-size:12.5px;" data-house-points="${i}">Pay ${h.price} pts</button>
+                  `}
+              </div>
+            `;
+            }).join("")}
+          </div>
+          <div class="divider"></div>
+          <div class="hint">You own ${owned.length} propert${owned.length===1?'y':'ies'}${owned.length ? ": " + owned.map(h=>escapeHtml(h.name)).join(", ") : ""}.</div>
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="panel-cancel">Close</button></div>
+        </div>
+      `;
+      wire = () => {
+        app.querySelectorAll("[data-house-cash]").forEach(b => b.onclick = () => {
+          const h = HOUSES[parseInt(b.getAttribute("data-house-cash"),10)];
+          doBuyHouse(h.name, h.price, "cash");
+        });
+        app.querySelectorAll("[data-house-points]").forEach(b => b.onclick = () => {
+          const h = HOUSES[parseInt(b.getAttribute("data-house-points"),10)];
+          doBuyHouse(h.name, h.price, "points");
+        });
+        app.querySelector("#panel-cancel").onclick = closePanel;
+      };
+    } else if (dashPanel === "fd"){
+      const fd = acct.fixedDeposit;
+      const matured = fdIsMatured(fd);
+      panelHtml = `
+        <div class="panel">
+          <h2>Fixed deposit</h2>
+          <div class="hint" style="margin-bottom:12px;">Locks exactly ${fmt(FD_AMOUNT)} for ${FD_MATURE_DAYS} day, matures to ${fmt(FD_RETURN)}.</div>
+          ${messageHtml()}
+          ${fd ? `
+            <div style="font-family:var(--mono); font-size:14px;">
+              <div>Amount locked — ${fmt(fd.amount)}</div>
+              <div>Opened — ${fd.startDate}</div>
+              <div>Status — ${matured ? '<span class="badge">MATURED</span>' : 'Still maturing'}</div>
+            </div>
+            <div class="stack" style="margin-top:14px;">
+              <button class="btn-primary" id="fd-redeem" ${matured ? '' : 'disabled'}>Redeem for ${fmt(FD_RETURN)}</button>
+            </div>
+          ` : `
+            <div class="stack">
+              <button class="btn-primary" id="fd-open">Open fixed deposit (${fmt(FD_AMOUNT)})</button>
+            </div>
+          `}
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="panel-cancel">Close</button></div>
+        </div>
+      `;
+      wire = () => {
+        if (fd){ const el = app.querySelector("#fd-redeem"); if (el) el.onclick = doRedeemFD; }
+        else { app.querySelector("#fd-open").onclick = doOpenFD; }
+        app.querySelector("#panel-cancel").onclick = closePanel;
+      };
+    } else if (dashPanel === "leaderboard"){
+      const ranked = Object.keys(accounts).map(n => ({ n, a: accounts[n], w: netWorth(accounts[n]) })).sort((x,y) => y.w - x.w);
+      panelHtml = `
+        <div class="panel">
+          <h2>Leaderboard</h2>
+          <div class="hint" style="margin-bottom:12px;">Ranked by net worth: cash + savings + investments + property − loans.</div>
+          <div class="tx-list">
+            ${ranked.map((r, i) => `
+              <div class="tx-row" style="align-items:center;">
+                <div class="desc"><span class="tx-id">#${i+1}</span>${escapeHtml(r.a.name)} ${r.n === currentAccountNumber ? '<span class="badge">YOU</span>' : ''}</div>
+                <div class="amt pos">${fmt(r.w)}</div>
+              </div>
+            `).join("")}
+          </div>
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="panel-cancel">Close</button></div>
+        </div>
+      `;
+      wire = () => { app.querySelector("#panel-cancel").onclick = closePanel; };
+    } else if (dashPanel === "auctions"){
+      const now = Date.now();
+      const active = auctions.filter(a => !a.settled && a.endTime > now).sort((x,y) => x.endTime - y.endTime);
+      const ended = auctions.filter(a => a.settled).sort((x,y) => y.endTime - x.endTime).slice(0, 5);
+      function timeLeft(ms){
+        const s = Math.max(0, Math.round((ms - now)/1000));
+        const m = Math.floor(s/60), r = s%60;
+        return m + "m " + (r<10?"0":"") + r + "s";
+      }
+      panelHtml = `
+        <div class="panel">
+          <h2>Live auctions</h2>
+          <div class="hint" style="margin-bottom:12px;">Balance: ${fmt(acct.balance)} &middot; Set your max — we auto-bid for you and fight it out with anyone else's max.</div>
+          ${messageHtml()}
+          ${active.length === 0 ? '<div class="hint">No active auctions right now.</div>' : active.map(a => {
+            const minBid = a.currentBid != null ? a.currentBid : a.startPrice;
+            const bidderCount = Object.keys(a.autoBids || {}).length;
+            const myMax = (a.autoBids || {})[currentAccountNumber];
+            const iAmLeading = a.bidderNum === currentAccountNumber;
+            return `
+              <div class="field" style="border-bottom:1px dashed var(--ledger-line); padding-bottom:14px;">
+                <label>${escapeHtml(a.item)} ${iAmLeading ? '<span class="badge" style="margin-left:6px;">YOU LEAD</span>' : ''}</label>
+                <div class="hint" style="margin-bottom:6px;">
+                  Current price: ${fmt(minBid)}${a.bidderName ? " — leading: " + escapeHtml(a.bidderName) : " (no bids yet)"} &middot; ${bidderCount} bidder${bidderCount===1?'':'s'} &middot; ${timeLeft(a.endTime)} left
+                  ${myMax ? " &middot; your max: " + fmt(myMax) : ""}
+                </div>
+                <div class="row">
+                  <input type="number" id="bid-${a.id}" placeholder="Your max (at least ${fmt(minBid)})" />
+                  <button class="btn-primary" style="flex:0 0 auto; width:auto; padding:11px 16px;" data-bid="${a.id}">Auto-bid</button>
+                </div>
+              </div>
+            `;
+          }).join("")}
+          ${ended.length ? `
+            <div class="divider"></div>
+            <div class="hint" style="margin-bottom:8px;">Recently settled</div>
+            <div class="tx-list">
+              ${ended.map(a => `
+                <div class="tx-row">
+                  <div class="desc">${escapeHtml(a.item)}</div>
+                  <div class="amt pos">${a.bidderName ? escapeHtml(a.bidderName) + " — " + fmt(a.currentBid) : "No winner"}</div>
+                </div>
+              `).join("")}
+            </div>
+          ` : ""}
+          <div class="footer-nav" style="padding-left:0;padding-right:0;"><button class="btn-ghost" id="panel-cancel">Close</button></div>
+        </div>
+      `;
+      wire = () => {
+        app.querySelectorAll("[data-bid]").forEach(b => b.onclick = () => {
+          const id = b.getAttribute("data-bid");
+          doSetAutoBid(id, app.querySelector("#bid-" + id).value);
+        });
+        app.querySelector("#panel-cancel").onclick = closePanel;
+      };
+    }
+
+    app.innerHTML = `
+      <div class="acct-strip">
+        <div class="who">Welcome, <b>${escapeHtml(acct.name)}</b></div>
+        <div class="num">ACCT ${currentAccountNumber}</div>
+      </div>
+      ${!dashPanel ? `
+        <div class="balance-block">
+          <div class="label">CURRENT BALANCE</div>
+          <div class="amount">${fmt(acct.balance)}</div>
+        </div>
+        <div class="sub-balances">
+          <div class="item"><div class="l">SAVINGS</div><div class="v">${fmt(acct.savings)}</div></div>
+          <div class="item"><div class="l">LOAN</div><div class="v">${fmt(acct.loan)}</div></div>
+          <div class="item"><div class="l">REWARDS</div><div class="v">${acct.rewards} pt</div></div>
+        </div>
+        ${messageHtml() ? `<div style="padding:14px 28px 0;">${messageHtml()}</div>` : ""}
+        <div class="grid-actions">
+          <button data-p="withdraw"><span class="ic">&#8595;</span>Withdraw</button>
+          <button data-p="deposit"><span class="ic">&#8593;</span>Deposit</button>
+          <button data-p="transfer"><span class="ic">&#8644;</span>Transfer</button>
+          <button data-p="savingsDeposit"><span class="ic">&#128176;</span>Save</button>
+          <button data-p="savingsWithdraw"><span class="ic">&#8617;</span>Unsave</button>
+          <button data-p="interest"><span class="ic">%</span>Interest</button>
+          <button data-p="salary"><span class="ic">&#128188;</span>Salary</button>
+          <button data-p="loan"><span class="ic">&#128179;</span>Loan</button>
+          <button data-p="repay"><span class="ic">&#8617;</span>Repay</button>
+          <button data-p="rewards"><span class="ic">&#9733;</span>Rewards</button>
+          <button data-p="market"><span class="ic">&#128200;</span>Market</button>
+          <button data-p="spend"><span class="ic">&#128722;</span>Spend</button>
+          <button data-p="houses"><span class="ic">&#127968;</span>Houses</button>
+          <button data-p="fd"><span class="ic">&#128274;</span>Fixed Dep.</button>
+          <button data-p="leaderboard"><span class="ic">&#127942;</span>Leaderboard</button>
+          <button data-p="auctions"><span class="ic">&#128276;</span>Auctions</button>
+          <button data-p="history"><span class="ic">&#8801;</span>History</button>
+          <button data-p="statement"><span class="ic">&#128203;</span>Statement</button>
+        </div>
+        <div class="panel" style="padding-bottom:0;">
+          <h2 style="margin-bottom:8px;">Recent activity</h2>
+          ${renderTxList(acct.transactions.slice(0,5))}
+        </div>
+        <div class="footer-nav">
+          ${isAccountAdmin(currentAccountNumber) ? `
+            <button class="btn-primary" id="btn-goadmin" style="margin-bottom:10px;">&#128737; Admin panel</button>
+          ` : ""}
+          <div class="row">
+            <button class="btn-ghost" id="btn-pin">Change PIN</button>
+            <button class="btn-ghost" id="btn-logout">Log out</button>
+          </div>
+        </div>
+      ` : panelHtml}
+    `;
+
+    if (!dashPanel){
+      app.querySelectorAll(".grid-actions button").forEach(b => {
+        b.onclick = () => openPanel(b.getAttribute("data-p"));
+      });
+      app.querySelector("#btn-pin").onclick = () => openPanel("pin");
+      app.querySelector("#btn-logout").onclick = logout;
+      const goAdminBtn = app.querySelector("#btn-goadmin");
+      if (goAdminBtn) goAdminBtn.onclick = goAdminFromDashboard;
+    } else if (wire){
+      wire();
+    }
+  }
+
+  function renderTxList(list){
+    if (!list || list.length === 0){
+      return `<div class="hint">No transactions yet.</div>`;
+    }
+    return `<div class="tx-list">` + list.map(t => {
+      const parts = t.split(" | ");
+      const id = parts[0] || "";
+      const desc = parts[1] || t;
+      const amtRaw = parts[2] || "";
+      const isNeg = amtRaw.trim().startsWith("-");
+      return `<div class="tx-row">
+        <div class="desc"><span class="tx-id">${escapeHtml(id)}</span>${escapeHtml(desc)}</div>
+        <div class="amt ${isNeg ? 'neg':'pos'}">${escapeHtml(amtRaw)}</div>
+      </div>`;
+    }).join("") + `</div>`;
+  }
+
+  function render(){
+    if (screen === "welcome") renderWelcome();
+    else if (screen === "create") renderCreate();
+    else if (screen === "login") renderLogin();
+    else if (screen === "dashboard") renderDashboard();
+    else if (screen === "admin") renderAdmin();
+  }
+
+  // ---------- Boot ----------
+  async function boot(){
+    app.innerHTML = `<div class="body-area"><p>Opening the ledger…</p></div>`;
+    await loadAccounts();
+    await loadMarket();
+    await loadAuctions();
+    watchAccounts();
+    watchMarket();
+    watchAuctions();
+    startMarketTimer();
+    startAuctionTimer();
+    await auctionTick();
+    render();
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>
